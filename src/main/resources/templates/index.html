@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Lunch time!</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/sse.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.1) 0, transparent 50%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, #818cf8, #f472b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .search-container {
+            margin-bottom: 3rem;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-box {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: 8px;
+            border-radius: 16px;
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            max-width: 600px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: var(--primary);
+        }
+
+        .search-input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            padding: 12px 16px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .search-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .restaurant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .restaurant-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: 24px;
+            border-radius: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .restaurant-card h2 {
+            margin: 0 0 16px 0;
+            font-size: 1.5rem;
+            color: #fff;
+        }
+
+        .menu-items {
+            flex-grow: 1;
+            margin-bottom: 20px;
+        }
+
+        .menu-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .menu-item .name {
+            color: var(--text-main);
+        }
+
+        .menu-item .price {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        .vote-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            width: 100%;
+        }
+
+        .vote-btn:hover {
+            background: var(--primary-hover);
+        }
+
+        .vote-btn:active {
+            transform: scale(0.98);
+        }
+
+        #live-results {
+            margin-top: 4rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: 24px;
+            border-radius: 20px;
+            width: 100%;
+        }
+
+        #live-results h3 {
+            margin-top: 0;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.875rem;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+        }
+
+        .address {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .distance {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            padding: 2px 8px;
+            border-radius: 99px;
+            margin-left: 8px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            z-index: 50;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <h1>Lunch time!</h1>
+            <p
+                style="font-size: 0.9rem; color: var(--text-muted); margin-top: -1.2rem; transform: translateX(60px); opacity: 0.8; font-style: italic;">
+                ... your vote matters
+            </p>
+        </div>
+
+        <div class="search-container">
+            <div style="width: 100%; max-width: 600px;">
+                <form th:action="@{${sessionId == 'global' ? '/vote' : '/vote/' + sessionId}}" method="get" class="search-box">
+                    <input type="text" name="address" class="search-input"
+                        placeholder="Enter your address (e.g. Purkyňova 123)..." th:value="${address}"
+                        list="suggestions" autocomplete="off" hx-get="/api/address/suggestions"
+                        hx-trigger="keyup changed delay:1200ms" hx-target="#suggestions" hx-swap="innerHTML">
+                    <button type="submit" class="search-btn">Find Lunch</button>
+                    <datalist id="suggestions">
+                        <th:block th:fragment="address-options">
+                            <option th:each="s : ${suggestions}" th:value="${s.displayName}"></option>
+                        </th:block>
+                    </datalist>
+                </form>
+                <div th:if="${error}"
+                    style="text-align: center; margin-top: 12px; color: #fb7185; font-size: 0.9rem; font-weight: 500;"
+                    th:text="${error}"></div>
+            </div>
+        </div>
+
+        <div class="restaurant-grid" id="restaurants">
+            <div th:each="restaurant : ${restaurants}" class="restaurant-card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <h2 th:text="${restaurant.name}"></h2>
+                    <span th:if="${restaurant.latitude != null}" class="distance">
+                        <span
+                            th:with="dist=${@distanceUtils.calculateDistance(targetLat, targetLon, restaurant.latitude, restaurant.longitude)}"
+                            th:text="${#numbers.formatDecimal(dist, 1, 1) + ' km'}"></span>
+                    </span>
+                </div>
+                <div class="address" th:text="${restaurant.address}"></div>
+                <div class="menu-items">
+                    <div th:each="item : ${restaurant.menu}" class="menu-item">
+                        <span class="name" th:text="${item.name}"></span>
+                        <span class="price" th:text="${item.price}"></span>
+                    </div>
+                </div>
+                <button class="vote-btn" th:attr="hx-post='/api/votes?restaurantId=' + ${restaurant.id} + '&sessionId=' + ${sessionId}"
+                    hx-target="#msg" hx-swap="innerHTML">
+                    Vote for this
+                </button>
+            </div>
+        </div>
+
+        <div id="msg"></div>
+
+        <div id="live-results" hx-ext="sse" th:attr="sse-connect='/api/votes/live?sessionId=' + ${sessionId}">
+            <h3>Live Standings</h3>
+            <div sse-swap="message">
+                Waiting for updates...
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

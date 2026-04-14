@@ -1,0 +1,18 @@
+﻿lunch-voting-1  | 
+lunch-voting-1  |   .   ____          _            __ _ _
+lunch-voting-1  |  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+lunch-voting-1  | ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+lunch-voting-1  |  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+lunch-voting-1  |   '  |____| .__|_| |_|_| |_\__, | / / / /
+lunch-voting-1  |  =========|_|==============|___/=/_/_/_/
+lunch-voting-1  |  :: Spring Boot ::                (v3.2.3)
+lunch-voting-1  | 
+lunch-voting-1  | 2026-03-18T21:43:22.350Z  INFO 1 --- [           main] c.e.lunchvoting.LunchVotingApplication   : Starting LunchVotingApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 1 (/app/app.jar started by root in /app)
+lunch-voting-1  | 2026-03-18T21:43:22.354Z  INFO 1 --- [           main] c.e.lunchvoting.LunchVotingApplication   : No active profile set, falling back to 1 default profile: "default"
+lunch-voting-1  | 2026-03-18T21:43:22.878Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+lunch-voting-1  | 2026-03-18T21:43:22.880Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+lunch-voting-1  | 2026-03-18T21:43:22.907Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 9 ms. Found 0 Redis repository interfaces.
+lunch-voting-1  | 2026-03-18T21:43:24.103Z  INFO 1 --- [           main] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 8080
+lunch-voting-1  | 2026-03-18T21:43:24.115Z  INFO 1 --- [           main] c.e.lunchvoting.LunchVotingApplication   : Started LunchVotingApplication in 2.121 seconds (process running for 2.579)
+lunch-voting-1  | 2026-03-18T21:44:06.762Z  INFO 1 --- [     parallel-1] c.e.l.service.GeocodingService           : Geocoding API search for: Francou, Brno
+lunch-voting-1  | 2026-03-18T21:44:07.181Z  INFO 1 --- [or-http-epoll-5] c.e.l.service.GeocodingService           : API returned 0 suggestions for: Francou, Brno

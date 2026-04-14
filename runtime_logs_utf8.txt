@@ -1,0 +1,20 @@
+﻿lunch-voting-1  | 
+lunch-voting-1  |   .   ____          _            __ _ _
+lunch-voting-1  |  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+lunch-voting-1  | ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+lunch-voting-1  |  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+lunch-voting-1  |   '  |____| .__|_| |_|_| |_\__, | / / / /
+lunch-voting-1  |  =========|_|==============|___/=/_/_/_/
+lunch-voting-1  |  :: Spring Boot ::                (v3.2.3)
+lunch-voting-1  | 
+lunch-voting-1  | 2026-03-18T21:59:28.972Z  INFO 1 --- [           main] c.e.lunchvoting.LunchVotingApplication   : Starting LunchVotingApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 1 (/app/app.jar started by root in /app)
+lunch-voting-1  | 2026-03-18T21:59:28.975Z  INFO 1 --- [           main] c.e.lunchvoting.LunchVotingApplication   : No active profile set, falling back to 1 default profile: "default"
+lunch-voting-1  | 2026-03-18T21:59:29.556Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+lunch-voting-1  | 2026-03-18T21:59:29.558Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data R2DBC repositories in DEFAULT mode.
+lunch-voting-1  | 2026-03-18T21:59:29.691Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 130 ms. Found 1 R2DBC repository interface.
+lunch-voting-1  | 2026-03-18T21:59:29.706Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+lunch-voting-1  | 2026-03-18T21:59:29.707Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+lunch-voting-1  | 2026-03-18T21:59:29.717Z  INFO 1 --- [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.example.lunchvoting.repository.RestaurantLocationRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+lunch-voting-1  | 2026-03-18T21:59:29.718Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 3 ms. Found 0 Redis repository interfaces.
+lunch-voting-1  | 2026-03-18T21:59:31.436Z  INFO 1 --- [           main] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 8080
+lunch-voting-1  | 2026-03-18T21:59:31.449Z  INFO 1 --- [           main] c.e.lunchvoting.LunchVotingApplication   : Started LunchVotingApplication in 2.863 seconds (process running for 3.35)

@@ -1,0 +1,30 @@
+﻿lunch-voting-1  | 
+lunch-voting-1  |   .   ____          _            __ _ _
+lunch-voting-1  |  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+lunch-voting-1  | ( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+lunch-voting-1  |  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+lunch-voting-1  |   '  |____| .__|_| |_|_| |_\__, | / / / /
+lunch-voting-1  |  =========|_|==============|___/=/_/_/_/
+lunch-voting-1  |  :: Spring Boot ::                (v3.2.3)
+lunch-voting-1  | 
+lunch-voting-1  | 2026-03-18T21:24:39.862Z  INFO 1 --- [           main] c.e.lunchvoting.LunchVotingApplication   : Starting LunchVotingApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 1 (/app/app.jar started by root in /app)
+lunch-voting-1  | 2026-03-18T21:24:39.865Z  INFO 1 --- [           main] c.e.lunchvoting.LunchVotingApplication   : No active profile set, falling back to 1 default profile: "default"
+lunch-voting-1  | 2026-03-18T21:24:40.429Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+lunch-voting-1  | 2026-03-18T21:24:40.431Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+lunch-voting-1  | 2026-03-18T21:24:40.462Z  INFO 1 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 13 ms. Found 0 Redis repository interfaces.
+lunch-voting-1  | 2026-03-18T21:24:41.747Z  INFO 1 --- [           main] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 8080
+lunch-voting-1  | 2026-03-18T21:24:41.765Z  INFO 1 --- [           main] c.e.lunchvoting.LunchVotingApplication   : Started LunchVotingApplication in 2.279 seconds (process running for 2.82)
+lunch-voting-1  | 2026-03-18T21:25:33.409Z  INFO 1 --- [     parallel-1] c.e.l.service.GeocodingService           : Geocoding API search for: Brat, Brno
+lunch-voting-1  | 2026-03-18T21:25:33.745Z  INFO 1 --- [or-http-epoll-6] c.e.l.service.GeocodingService           : API returned 0 suggestions for: Brat, Brno
+lunch-voting-1  | 2026-03-18T21:25:34.257Z  INFO 1 --- [     parallel-3] c.e.l.service.GeocodingService           : Geocoding API search for: Brati, Brno
+lunch-voting-1  | 2026-03-18T21:25:34.368Z  INFO 1 --- [or-http-epoll-6] c.e.l.service.GeocodingService           : API returned 0 suggestions for: Brati, Brno
+lunch-voting-1  | 2026-03-18T21:25:36.257Z  INFO 1 --- [     parallel-5] c.e.l.service.GeocodingService           : Geocoding API search for: Bratisl, Brno
+lunch-voting-1  | 2026-03-18T21:25:36.371Z  INFO 1 --- [or-http-epoll-6] c.e.l.service.GeocodingService           : API returned 0 suggestions for: Bratisl, Brno
+lunch-voting-1  | 2026-03-18T21:26:30.699Z  INFO 1 --- [     parallel-4] c.e.l.service.GeocodingService           : Geocoding API search for: Pur, Brno
+lunch-voting-1  | 2026-03-18T21:26:30.718Z  INFO 1 --- [or-http-epoll-6] c.e.l.service.GeocodingService           : API returned 0 suggestions for: Pur, Brno
+lunch-voting-1  | 2026-03-18T21:26:31.225Z  INFO 1 --- [     parallel-6] c.e.l.service.GeocodingService           : Geocoding API search for: Purk, Brno
+lunch-voting-1  | 2026-03-18T21:26:31.243Z  INFO 1 --- [or-http-epoll-6] c.e.l.service.GeocodingService           : API returned 0 suggestions for: Purk, Brno
+lunch-voting-1  | 2026-03-18T21:26:32.404Z  INFO 1 --- [     parallel-8] c.e.l.service.GeocodingService           : Geocoding API search for: Purky, Brno
+lunch-voting-1  | 2026-03-18T21:26:32.423Z  INFO 1 --- [or-http-epoll-6] c.e.l.service.GeocodingService           : API returned 0 suggestions for: Purky, Brno
+lunch-voting-1  | 2026-03-18T21:29:54.431Z  INFO 1 --- [     parallel-9] c.e.l.service.GeocodingService           : Geocoding API search for: Purky, Brno
+lunch-voting-1  | 2026-03-18T21:29:54.450Z  INFO 1 --- [or-http-epoll-6] c.e.l.service.GeocodingService           : API returned 0 suggestions for: Purky, Brno
