@@ -6,7 +6,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
+import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -14,7 +16,6 @@ public class VoteService {
 
     private final ReactiveRedisTemplate<String, Object> redisTemplate;
     private static final String VOTE_KEY_PREFIX = "lunch-votes:";
-    private static final String USER_VOTE_KEY_PREFIX = "user-voted:";
     
     private final Sinks.Many<Map<Object, Object>> sink = Sinks.many().multicast().directBestEffort();
 
@@ -22,17 +23,54 @@ public class VoteService {
         this.redisTemplate = redisTemplate;
     }
 
-    public Mono<Boolean> vote(String restaurantId, String userId, String sessionId) {
-        String userKey = USER_VOTE_KEY_PREFIX + sessionId + ":" + userId;
+    public Mono<Boolean> voteMultiple(List<String> restaurantIds, String voterGuid, String sessionId, String ipAddress) {
+        if (restaurantIds == null || restaurantIds.isEmpty()) return Mono.just(false);
+        
+        String votersKey = "poll:" + sessionId + ":voters";
+        String choicesKey = "voter:" + sessionId + ":" + voterGuid + ":choices";
+        String ratelimitKey = "ratelimit:ip:" + ipAddress;
         String totalsKey = VOTE_KEY_PREFIX + sessionId + ":totals";
         
-        return redisTemplate.hasKey(userKey)
-            .flatMap(hasVoted -> {
-                if (hasVoted) {
-                    return Mono.just(false);
-                }
-                return redisTemplate.opsForValue().set(userKey, restaurantId)
-                    .then(redisTemplate.opsForHash().increment(totalsKey, restaurantId, 1L))
+        return redisTemplate.hasKey(ratelimitKey)
+            .flatMap(isRateLimited -> {
+                if (isRateLimited) return Mono.just(false);
+                
+                return redisTemplate.opsForSet().isMember(votersKey, voterGuid)
+                    .flatMap(alreadyVoted -> {
+                        if (Boolean.TRUE.equals(alreadyVoted)) return Mono.just(false);
+                        
+                        return redisTemplate.opsForValue().set(ratelimitKey, "1", Duration.ofSeconds(2))
+                            .then(redisTemplate.opsForSet().add(votersKey, voterGuid))
+                            .then(redisTemplate.opsForSet().add(choicesKey, restaurantIds.toArray()))
+                            .then(Flux.fromIterable(restaurantIds)
+                                .flatMap(id -> redisTemplate.opsForHash().increment(totalsKey, id, 1L))
+                                .then())
+                            .then(getSnapshot(sessionId))
+                            .doOnNext(snapshot -> {
+                                Map<Object, Object> message = new HashMap<>(snapshot);
+                                message.put("_sessionId", sessionId);
+                                sink.tryEmitNext(message);
+                            })
+                            .thenReturn(true);
+                    });
+            });
+    }
+
+    public Mono<Boolean> resetVote(String voterGuid, String sessionId) {
+        String votersKey = "poll:" + sessionId + ":voters";
+        String choicesKey = "voter:" + sessionId + ":" + voterGuid + ":choices";
+        String totalsKey = VOTE_KEY_PREFIX + sessionId + ":totals";
+
+        return redisTemplate.opsForSet().members(choicesKey)
+            .map(Object::toString)
+            .collectList()
+            .flatMap(choices -> {
+                if (choices.isEmpty()) return Mono.just(false);
+                
+                return Flux.fromIterable(choices)
+                    .flatMap(id -> redisTemplate.opsForHash().increment(totalsKey, id, -1L))
+                    .then(redisTemplate.delete(choicesKey))
+                    .then(redisTemplate.opsForSet().remove(votersKey, voterGuid))
                     .then(getSnapshot(sessionId))
                     .doOnNext(snapshot -> {
                         Map<Object, Object> message = new HashMap<>(snapshot);

@@ -14,6 +14,7 @@ import org.thymeleaf.spring6.context.webflux.IReactiveDataDriverContextVariable;
 import org.thymeleaf.spring6.context.webflux.ReactiveDataDriverContextVariable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import org.springframework.web.server.ServerWebExchange;
 
 import java.util.Map;
 import java.util.UUID;
@@ -74,12 +75,22 @@ public class RestaurantController {
 
     @PostMapping("/api/sessions")
     @ResponseBody
-    public String createSession() {
+    public String createSession(ServerWebExchange exchange) {
         String sessionId = UUID.randomUUID().toString().substring(0, 8);
-        String url = "/vote/" + sessionId;
-        return "<input type=\"text\" id=\"voting-url\" value=\"" + url + "\" readonly onclick=\"this.select()\" " +
-               "style=\"background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); padding: 14px; border-radius: 12px; color: white; text-align: center; font-family: monospace; border: 1px solid var(--primary);\">" +
-               "<a href=\"" + url + "\" class=\"generate-btn\" style=\"text-decoration: none; margin-top: 10px;\">Go to Voting Room</a>";
+        var uri = exchange.getRequest().getURI();
+        String baseUrl = uri.getScheme() + "://" + uri.getAuthority();
+        String path = "/vote/" + sessionId;
+        String fullUrl = baseUrl + path;
+
+        return "<div class=\"url-wrapper\">" +
+               "<input type=\"text\" id=\"voting-url\" value=\"" + fullUrl + "\" readonly onclick=\"this.select()\" " +
+               "style=\"flex-grow: 1; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--primary); padding: 14px; border-radius: 12px; color: white; text-align: center; font-family: monospace; outline: none;\">" +
+               "<button onclick=\"copyUrl()\" class=\"copy-btn\" title=\"Copy to clipboard\">" +
+               "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"9\" y=\"9\" width=\"13\" height=\"13\" rx=\"2\" ry=\"2\"></rect><path d=\"M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1\"></path></svg>" +
+               "</button>" +
+               "</div>" +
+               "<div id=\"copy-success\">Copied to clipboard!</div>" +
+               "<a href=\"" + path + "\" class=\"generate-btn\" style=\"text-decoration: none; margin-top: 10px; text-align: center;\">Go to Voting Room</a>";
     }
 
     @GetMapping("/api/address/suggestions")
@@ -107,11 +118,50 @@ public class RestaurantController {
 
     @PostMapping("/api/votes")
     @ResponseBody
-    public Mono<String> vote(@RequestParam String restaurantId, @RequestParam(required = false, defaultValue = "global") String sessionId) {
-        // Simple session-based ID for demo
-        String userId = UUID.randomUUID().toString(); 
-        return voteService.vote(restaurantId, userId, sessionId)
-            .map(success -> success ? "Vote recorded!" : "You already voted!");
+    public Mono<String> vote(ServerWebExchange exchange,
+                            @RequestHeader("X-Voter-GUID") String voterGuid) {
+        return exchange.getFormData()
+            .flatMap(formData -> {
+                String restaurantIdsJoined = formData.getFirst("restaurantId");
+                String sessionId = formData.getFirst("sessionId");
+                
+                // Fallback to query params if not in form data
+                if (restaurantIdsJoined == null) {
+                    restaurantIdsJoined = exchange.getRequest().getQueryParams().getFirst("restaurantId");
+                }
+                if (sessionId == null) {
+                    sessionId = exchange.getRequest().getQueryParams().getFirst("sessionId");
+                }
+                
+                if (sessionId == null) sessionId = "global";
+                if (restaurantIdsJoined == null || restaurantIdsJoined.isBlank()) {
+                    return Mono.just("No restaurants selected.");
+                }
+
+                java.util.List<String> restaurantIds = java.util.Arrays.asList(restaurantIdsJoined.split(","));
+                String ipAddress = exchange.getRequest().getRemoteAddress() != null 
+                    ? exchange.getRequest().getRemoteAddress().getAddress().getHostAddress() 
+                    : "unknown";
+                    
+                return voteService.voteMultiple(restaurantIds, voterGuid, sessionId, ipAddress)
+                    .map(success -> success ? "Votes recorded!" : "Unable to vote (already voted or rate limited).");
+            });
+    }
+
+    @PostMapping("/api/votes/reset")
+    @ResponseBody
+    public Mono<String> reset(ServerWebExchange exchange,
+                             @RequestHeader("X-Voter-GUID") String voterGuid) {
+        return exchange.getFormData().flatMap(formData -> {
+            String sessionId = formData.getFirst("sessionId");
+            if (sessionId == null) {
+                sessionId = exchange.getRequest().getQueryParams().getFirst("sessionId");
+            }
+            if (sessionId == null) sessionId = "global";
+            
+            return voteService.resetVote(voterGuid, sessionId)
+                .map(success -> success ? "Votes reset successfully!" : "No votes to reset or already reset.");
+        });
     }
 
     @GetMapping("/api/menus")
